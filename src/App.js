@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Tasks from "./components/Tasks";
 
 export default function App() {
   const [todoList, setTodoList] = useState([]);
@@ -8,10 +9,12 @@ export default function App() {
     setNewTask(e.target.value);
     console.log(newTask);
   };
+
   const handleAddTask = () => {
     const task = {
       id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
-      taskName: newTask
+      taskName: newTask,
+      completed: false,
     };
     setTodoList([...todoList, task]);
   };
@@ -24,33 +27,42 @@ export default function App() {
     setTodoList(todoList.filter((task) => task.id !== id));
   };
 
+  const handleCompleteTask=(id)=>{
+    setTodoList(
+      todoList.map((task)=>{
+      if(task.id === id){
+        return { ...task,completed:true}
+      }else{
+        return task
+      }
+    }))
+  }
+
   return (
     <div className="App">
-      <div style={{ backgroundColor: "darkgray" }}>
+      <div style={{backgroundColor:"darkgray"}} >
         <input
           onChange={handleNewTask}
           type="text"
           placeholder="Add tasks here"
         />
         <span>&nbsp;</span>
+
         <button style={{ backgroundColor: "green" }} onClick={handleAddTask}>
           Add List
         </button>
       </div>
-      <div style={{ backgroundColor: "lightgray" }}>
+
+      <div>
         {todoList.map((task) => {
           return (
-            <div
-              style={{ display: "flex", flexFlow: "row", alignItems: "center" }}
-            >
-              <h1>{task.taskName}</h1>
-              <button
-                style={{ backgroundColor: "red" }}
-                onClick={() => handleDeleteTask(task.id)}
-              >
-                Delete
-              </button>
-            </div>
+            <Tasks
+              taskName={task.taskName}
+              id={task.id}
+              deleteTask={handleDeleteTask}
+              completeTask={handleCompleteTask}
+              completedTask={task.completed}
+            />
           );
         })}
       </div>
